@@ -104,7 +104,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-
 class GeneratorPage extends StatefulWidget {
   @override
   State<GeneratorPage> createState() => _GeneratorPageState();
@@ -145,7 +144,6 @@ class _GeneratorPageState extends State<GeneratorPage> {
       }
     });
   
-
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center, // Center the contents vertically
@@ -153,40 +151,38 @@ class _GeneratorPageState extends State<GeneratorPage> {
         children: [
           // Scrollable history list
           Expanded(
-  child: SingleChildScrollView(
-    controller: _scrollController,  // Attach the scroll controller
-    child: Column(
-      children: appState.history
-          .map((pair) => GestureDetector(
-                onTap: () {
-                  appState.toggleFavorite(pair);  // Toggle favorite on tap
-                },
-                child: Container(
-                  padding: EdgeInsets.all(8),  // Optional padding
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(appState.favorites.contains(pair) ? Icons.favorite : Icons.favorite_border),
-                      SizedBox(width: 10),
-                      Text(
-                        pair.asLowerCase,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: appState.favorites.contains(pair) ? FontWeight.bold : FontWeight.normal,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ))
-          .toList(),
-    ),
-  ),
-),
+            child: SingleChildScrollView(
+              controller: _scrollController,  // Attach the scroll controller
+              child: Column(
+                children: appState.history
+                    .map((pair) => GestureDetector(
+                          onTap: () {
+                            appState.toggleFavorite(pair);  // Toggle favorite on tap
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(8),  // Optional padding
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(appState.favorites.contains(pair) ? Icons.favorite : Icons.favorite_border),
+                                SizedBox(width: 10),
+                                Text(
+                                  pair.asLowerCase,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: appState.favorites.contains(pair) ? FontWeight.bold : FontWeight.normal,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ))
+                    .toList(),
+              ),
+            ),
+          ),
 
-
-          
           const SizedBox(height: 20),
 
           // BigCard remains centered
