@@ -163,13 +163,20 @@ class _GeneratorPageState extends State<GeneratorPage> {
                 },
                 child: Container(
                   padding: EdgeInsets.all(8),  // Optional padding
-                  child: Text(
-                    pair.asLowerCase,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black87,
-                    ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(appState.favorites.contains(pair) ? Icons.favorite : Icons.favorite_border),
+                      SizedBox(width: 10),
+                      Text(
+                        pair.asLowerCase,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: appState.favorites.contains(pair) ? FontWeight.bold : FontWeight.normal,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ))
@@ -177,6 +184,7 @@ class _GeneratorPageState extends State<GeneratorPage> {
     ),
   ),
 ),
+
 
           
           const SizedBox(height: 20),
