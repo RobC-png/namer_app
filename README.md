@@ -1,16 +1,40 @@
-# namer_app
+### 🐦 namer_app
 
-A new Flutter project.
+A simple, evolving Flutter app for generating name pairings.  
+Originally built by following the [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab) codelab — now extended into a playground to learn Flutter and experiment with UI concepts.
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## 🚀 Getting Started
 
-A few resources to get you started if this is your first Flutter project:
+This project was bootstrapped from the official Flutter codelab. To run it locally:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+```bash
+flutter pub get
+flutter run
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Make sure you have Flutter installed and set up properly. You can check by running:
+
+```bash
+flutter doctor
+```
+
+## ✅ Features Implemented (Post-Codelab)
+
+Here are the additions made since finishing the official tutorial:
+
+1. 🔁 History Tracking – Keeps a scrollable list of previously generated word pairs.
+
+2. ❤️ History Favorites – Tap to mark word pairs in the history as favorites.
+
+3. 🗑️ Delete Functionality – Remove items from favorites and history individually.
+
+## 🛠️ Planned Features
+This project is actively evolving as a learning tool. Here are my plans for future additions:
+
+1. 🔍 Search – Search within favorites or history.
+
+2. 📋 Copy to Clipboard – Tap to copy a word pair.
+
+3. ☁️ Persistence – Save favorites across sessions (e.g. SharedPreferences or local DB).
