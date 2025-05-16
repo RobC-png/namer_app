@@ -252,10 +252,20 @@ class FavoritesPage extends StatelessWidget {
 
     var theme = Theme.of(context);
 
+    var textStyle = TextStyle(
+      color: theme.colorScheme.onPrimary,
+      fontSize: 15,
+      fontWeight: FontWeight.bold,
+    );
+
     if (appState.favorites.isEmpty) {
       return Center(
         child: Text('No favorites yet.'),
       );
+    }
+
+    void FavClicked(WordPair) {
+      appState.toggleFavorite(WordPair);
     }
 
     return Column(
@@ -280,22 +290,26 @@ class FavoritesPage extends StatelessWidget {
             itemCount: appState.favorites.length,
             itemBuilder: (context, index) {
               final pair = appState.favorites[index];
-              return Card(
-                elevation: 4,
-                child: Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.favorite,
-                        color: theme.colorScheme.primary,
-                      ),
-                      SizedBox(width: 8),
-                      Text(
-                        pair.asLowerCase,
-                        selectionColor: theme.colorScheme.primary,
-                      ),
-                    ],
+              return GestureDetector(
+                onTap: () => FavClicked(pair),
+                child: Card(
+                  elevation: 4,
+                  color: theme.colorScheme.primary,
+                  child: Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.favorite,
+                          color: theme.colorScheme.onPrimary
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          pair.asLowerCase,
+                          style: textStyle,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );
