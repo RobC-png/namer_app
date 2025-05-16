@@ -192,7 +192,7 @@ class _GeneratorPageState extends State<GeneratorPage> {
             ),
           ),
 
-          const SizedBox(height: 20),
+          //const SizedBox(height: 20),
 
           // BigCard remains centered
           Center(
@@ -233,6 +233,7 @@ class _GeneratorPageState extends State<GeneratorPage> {
                 ),
             ],
           ),
+
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.35, // 50% of screen height
           )
@@ -249,30 +250,64 @@ class FavoritesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
 
+    var theme = Theme.of(context);
+
     if (appState.favorites.isEmpty) {
       return Center(
         child: Text('No favorites yet.'),
       );
     }
 
-    return ListView(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.all(20),
-          child: Text('You have '
-              '${appState.favorites.length} favorites:'),
-        ),
-        for (var pair in appState.favorites)
-          ListTile(
-            leading: Icon(Icons.favorite),
-            title: Text(pair.asLowerCase),
+          child: Text(
+            'You have ${appState.favorites.length} favorites:',
+            style: Theme.of(context).textTheme.titleMedium,
           ),
+        ),
+        Expanded(
+          child: GridView.builder(
+            padding: const EdgeInsets.all(16),
+            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 250, // Each item will be at most 200 pixels wide
+              mainAxisSpacing: 10,
+              crossAxisSpacing: 10,
+              childAspectRatio: 3, // Width / Height ratio
+            ),
+            itemCount: appState.favorites.length,
+            itemBuilder: (context, index) {
+              final pair = appState.favorites[index];
+              return Card(
+                elevation: 4,
+                child: Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.favorite,
+                        color: theme.colorScheme.primary,
+                      ),
+                      SizedBox(width: 8),
+                      Text(
+                        pair.asLowerCase,
+                        selectionColor: theme.colorScheme.primary,
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        )
       ],
     );
   }
 }
 
-class BigCard extends StatelessWidget {
+class BigCard extends StatefulWidget {
   const BigCard({
     super.key,
     required this.pair,
@@ -281,20 +316,84 @@ class BigCard extends StatelessWidget {
   final WordPair pair;
 
   @override
+  State<BigCard> createState() => _BigCardState();
+}
+
+class _BigCardState extends State<BigCard> {
+  @override
   Widget build(BuildContext context) {
+
+    var appState = context.watch<MyAppState>();
+
     var theme = Theme.of(context);
-    var style = theme.textTheme.displayMedium?.copyWith(
+    var styleNorm = theme.textTheme.displayMedium?.copyWith(
       color: theme.colorScheme.onPrimary,
+      fontWeight: FontWeight.normal,
+    );
+    var styleFavr = theme.textTheme.displayMedium?.copyWith(
+      color: theme.colorScheme.onPrimary,
+      fontWeight: FontWeight.bold,
     );
 
     return Card(
+      elevation: 5,
+      shadowColor: theme.colorScheme.primary,
       color: theme.colorScheme.primary,
       child: Padding(
         padding: const EdgeInsets.all(20),
-        child: Text(pair.asLowerCase,
-          style: style,
-          semanticsLabel: pair.asPascalCase,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(appState.favorites.contains(appState.current) 
+              ? Icons.favorite
+              : Icons.favorite_border,
+              color: theme.colorScheme.onPrimary,
+              size: 40
+            ),
+
+            SizedBox(width: 10),
+            
+            Text(widget.pair.asLowerCase,
+              style: appState.favorites.contains(appState.current) ? styleFavr : styleNorm,
+              semanticsLabel: widget.pair.asPascalCase,
+            ),
+          ],
         ),
+      ),
+    );
+  }
+}
+
+class HoverCard extends StatefulWidget {
+  @override
+  _HoverCardState createState() => _HoverCardState();
+}
+
+class _HoverCardState extends State<HoverCard> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 200),
+        decoration: BoxDecoration(
+          color: _isHovered ? Colors.orange.shade100 : Colors.white,
+          boxShadow: _isHovered
+              ? [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 12,
+                    offset: Offset(0, 6),
+                  )
+                ]
+              : [],
+          borderRadius: BorderRadius.circular(12),
+        ),
+        padding: EdgeInsets.all(16),
+        child: Text("Hover over me!"),
       ),
     );
   }
