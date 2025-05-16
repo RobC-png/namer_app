@@ -51,6 +51,12 @@ class MyAppState extends ChangeNotifier {
     if (input.isEmpty) return input;
     return input[0].toUpperCase() + input.substring(1);
   }
+
+  void removeWordPair(WordPair pair){
+      favorites.remove(pair);
+      history.remove(pair);
+      notifyListeners();
+  }
 }
 
 class MyHomePage extends StatefulWidget {
@@ -232,6 +238,8 @@ class _FavsScrollWidgetState extends State<FavsScrollWidget> {
   @override
   Widget build(BuildContext context) {
 
+    var appState = context.watch<MyAppState>();
+
     return SingleChildScrollView(
       controller: widget._scrollController,
       child: Column(
@@ -248,8 +256,11 @@ class _FavsScrollWidgetState extends State<FavsScrollWidget> {
                         Icon(widget.appState.favorites.contains(pair)
                             ? Icons.favorite
                             : Icons.favorite_border,
-                            color: Theme.of(context).colorScheme.primary),
+                            color: Theme.of(context).colorScheme.primary
+                        ),
+
                         SizedBox(width: 10),
+
                         Text(
                           pair.asPascalCase,
                           style: TextStyle(
@@ -257,6 +268,16 @@ class _FavsScrollWidgetState extends State<FavsScrollWidget> {
                             fontWeight: widget.appState.favorites.contains(pair)
                                 ? FontWeight.bold
                                 : FontWeight.normal,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
+
+                        SizedBox(width: 10),
+
+                        GestureDetector(
+                          onTap: () => appState.removeWordPair(pair),
+                          child: Icon(
+                            Icons.delete,
                             color: Theme.of(context).colorScheme.primary,
                           ),
                         ),
@@ -394,6 +415,12 @@ class _BigCardState extends State<BigCard> {
       fontWeight: FontWeight.w400,
     );
 
+    void removeCurrent(WordPair pair){
+      appState.getNext();
+      appState.history.remove(pair);
+      appState.favorites.remove(pair);
+    }
+
     return Card(
       elevation: 5,
       shadowColor: theme.colorScheme.primary,
@@ -403,11 +430,15 @@ class _BigCardState extends State<BigCard> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(appState.favorites.contains(appState.current) 
-              ? Icons.favorite
-              : Icons.favorite_border,
-              color: theme.colorScheme.onPrimary,
-              size: 40
+
+            GestureDetector(
+              onTap: () => appState.toggleFavorite(widget.pair),
+              child: Icon(appState.favorites.contains(appState.current) 
+                ? Icons.favorite
+                : Icons.favorite_border,
+                color: theme.colorScheme.onPrimary,
+                size: 40
+              ),
             ),
 
             SizedBox(width: 10),
@@ -421,43 +452,19 @@ class _BigCardState extends State<BigCard> {
               style: appState.favorites.contains(appState.current) ? styleFavrTwo : styleNormTwo,
               semanticsLabel: widget.pair.asPascalCase,
             ),
+
+            SizedBox(width: 10),
+
+            GestureDetector(
+              onTap: () => removeCurrent(widget.pair),
+              child: Icon(
+                Icons.loop,
+                color: theme.colorScheme.onPrimaryContainer,
+                size: 40,
+              ),
+            ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class HoverCard extends StatefulWidget {
-  @override
-  _HoverCardState createState() => _HoverCardState();
-}
-
-class _HoverCardState extends State<HoverCard> {
-  bool _isHovered = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return MouseRegion(
-      onEnter: (_) => setState(() => _isHovered = true),
-      onExit: (_) => setState(() => _isHovered = false),
-      child: AnimatedContainer(
-        duration: Duration(milliseconds: 200),
-        decoration: BoxDecoration(
-          color: _isHovered ? Colors.orange.shade100 : Colors.white,
-          boxShadow: _isHovered
-              ? [
-                  BoxShadow(
-                    color: Colors.black26,
-                    blurRadius: 12,
-                    offset: Offset(0, 6),
-                  )
-                ]
-              : [],
-          borderRadius: BorderRadius.circular(12),
-        ),
-        padding: EdgeInsets.all(16),
-        child: Text("Hover over me!"),
       ),
     );
   }
