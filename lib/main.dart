@@ -73,7 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
         children: [
           SafeArea(
             child: NavigationRail(
-              extended: true,
+              extended: true  ,
               destinations: [
                 NavigationRailDestination(
                   icon: Icon(Icons.home),
@@ -136,13 +136,6 @@ class _GeneratorPageState extends State<GeneratorPage> {
     } else {
       icon = Icons.favorite_border;
     }
-
-    // Automatically scroll to the bottom after a new entry is added
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
-      }
-    });
   
     return Center(
       child: Column(
@@ -151,34 +144,50 @@ class _GeneratorPageState extends State<GeneratorPage> {
         children: [
           // Scrollable history list
           Expanded(
-            child: SingleChildScrollView(
-              controller: _scrollController,  // Attach the scroll controller
-              child: Column(
-                children: appState.history
-                    .map((pair) => GestureDetector(
-                          onTap: () {
-                            appState.toggleFavorite(pair);  // Toggle favorite on tap
-                          },
-                          child: Container(
-                            padding: EdgeInsets.all(8),  // Optional padding
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(appState.favorites.contains(pair) ? Icons.favorite : Icons.favorite_border),
-                                SizedBox(width: 10),
-                                Text(
-                                  pair.asLowerCase,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: appState.favorites.contains(pair) ? FontWeight.bold : FontWeight.normal,
-                                    color: Colors.black,
+            child: ShaderMask(
+              shaderCallback: (bounds) => LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.transparent, // Fade out at the top
+                  Colors.black,       // Fully visible below
+                ],
+                stops: [0.0, 0.5],     // Fade spans top 10%
+              ).createShader(bounds),
+              blendMode: BlendMode.dstIn,
+              child: SingleChildScrollView(
+                controller: _scrollController,
+                child: Column(
+                  children: appState.history
+                      .map((pair) => GestureDetector(
+                            onTap: () {
+                              appState.toggleFavorite(pair); // Toggle favorite on tap
+                            },
+                            child: Container(
+                              padding: EdgeInsets.all(8), // Optional padding
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(appState.favorites.contains(pair)
+                                      ? Icons.favorite
+                                      : Icons.favorite_border),
+                                  SizedBox(width: 10),
+                                  Text(
+                                    pair.asLowerCase,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: appState.favorites.contains(pair)
+                                          ? FontWeight.bold
+                                          : FontWeight.normal,
+                                      color: Colors.black,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                        ))
-                    .toList(),
+                          ))
+                      .toList(),
+                ),
               ),
             ),
           ),
@@ -205,10 +214,23 @@ class _GeneratorPageState extends State<GeneratorPage> {
               const SizedBox(width: 10),
               ElevatedButton(
                 onPressed: () {
+                  var appState = context.read<MyAppState>(); // Use read instead of watch
+
                   appState.getNext();
-                },
-                child: const Text('Next'),
-              ),
+
+                  // Scroll to bottom after next word is added
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (_scrollController.hasClients) {
+                      _scrollController.animateTo(
+                        _scrollController.position.maxScrollExtent,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeOut,
+                      );
+                    }
+                    });
+                  },
+                  child: const Text('Next'),
+                ),
             ],
           ),
           SizedBox(
