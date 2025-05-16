@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
         title: 'Namer App',
         theme: ThemeData(
           useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 243, 85, 17)),
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 3, 229, 173)),
         ),
         home: MyHomePage(),
       ),
@@ -157,14 +157,12 @@ class _GeneratorPageState extends State<GeneratorPage> {
                   Colors.transparent, // Fade out at the top
                   Colors.black,       // Fully visible below
                 ],
-                stops: [0.0, 0.5],     // Fade spans top 10%
+                stops: [0.1, 1],     // Fade spans top 50%
               ).createShader(bounds),
               blendMode: BlendMode.dstIn,
               child: FavsScrollWidget(scrollController: _scrollController, appState: appState),
             ),
           ),
-
-          //const SizedBox(height: 20),
 
           // BigCard remains centered
           Center(
@@ -215,7 +213,7 @@ class _GeneratorPageState extends State<GeneratorPage> {
   }
 }
 
-class FavsScrollWidget extends StatelessWidget {
+class FavsScrollWidget extends StatefulWidget {
   const FavsScrollWidget({
     super.key,
     required ScrollController scrollController,
@@ -226,32 +224,40 @@ class FavsScrollWidget extends StatelessWidget {
   final MyAppState appState;
 
   @override
+  State<FavsScrollWidget> createState() => _FavsScrollWidgetState();
+}
+
+class _FavsScrollWidgetState extends State<FavsScrollWidget> {
+
+  @override
   Widget build(BuildContext context) {
+
     return SingleChildScrollView(
-      controller: _scrollController,
+      controller: widget._scrollController,
       child: Column(
-        children: appState.history
+        children: widget.appState.history
             .map((pair) => GestureDetector(
                   onTap: () {
-                    appState.toggleFavorite(pair); // Toggle favorite on tap
+                    widget.appState.toggleFavorite(pair); // Toggle favorite on tap
                   },
                   child: Container(
                     padding: EdgeInsets.all(8), // Optional padding
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(appState.favorites.contains(pair)
+                        Icon(widget.appState.favorites.contains(pair)
                             ? Icons.favorite
-                            : Icons.favorite_border),
+                            : Icons.favorite_border,
+                            color: Theme.of(context).colorScheme.primary),
                         SizedBox(width: 10),
                         Text(
                           pair.asPascalCase,
                           style: TextStyle(
                             fontSize: 16,
-                            fontWeight: appState.favorites.contains(pair)
+                            fontWeight: widget.appState.favorites.contains(pair)
                                 ? FontWeight.bold
                                 : FontWeight.normal,
-                            color: Colors.black,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                         ),
                       ],
@@ -273,10 +279,15 @@ class FavoritesPage extends StatelessWidget {
 
     var theme = Theme.of(context);
 
-    var textStyle = TextStyle(
+    var styleFavrOne = theme.textTheme.displayMedium?.copyWith(
       color: theme.colorScheme.onPrimary,
-      fontSize: 15,
-      fontWeight: FontWeight.bold,
+      fontWeight: FontWeight.w700,
+      fontSize: 18,
+    );
+    var styleFavrTwo = theme.textTheme.displayMedium?.copyWith(
+      color: theme.colorScheme.onPrimaryContainer,
+      fontWeight: FontWeight.w500,
+      fontSize: 18,
     );
 
     if (appState.favorites.isEmpty) {
@@ -285,8 +296,8 @@ class FavoritesPage extends StatelessWidget {
       );
     }
 
-    void FavClicked(WordPair) {
-      appState.toggleFavorite(WordPair);
+    void favClicked(WordPair wordPair) {
+      appState.toggleFavorite(wordPair);
     }
 
     return Column(
@@ -312,7 +323,7 @@ class FavoritesPage extends StatelessWidget {
             itemBuilder: (context, index) {
               final pair = appState.favorites[index];
               return GestureDetector(
-                onTap: () => FavClicked(pair),
+                onTap: () => favClicked(pair),
                 child: Card(
                   elevation: 4,
                   color: theme.colorScheme.primary,
@@ -326,8 +337,12 @@ class FavoritesPage extends StatelessWidget {
                         ),
                         SizedBox(width: 8),
                         Text(
-                          pair.asLowerCase,
-                          style: textStyle,
+                          appState.capitalize(pair.first),
+                          style: styleFavrOne,
+                        ),
+                        Text(
+                          appState.capitalize(pair.second),
+                          style: styleFavrTwo,
                         ),
                       ],
                     ),
