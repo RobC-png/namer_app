@@ -46,6 +46,11 @@ class MyAppState extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+  String capitalize(String input) {
+    if (input.isEmpty) return input;
+    return input[0].toUpperCase() + input.substring(1);
+  }
 }
 
 class MyHomePage extends StatefulWidget {
@@ -155,40 +160,7 @@ class _GeneratorPageState extends State<GeneratorPage> {
                 stops: [0.0, 0.5],     // Fade spans top 10%
               ).createShader(bounds),
               blendMode: BlendMode.dstIn,
-              child: SingleChildScrollView(
-                controller: _scrollController,
-                child: Column(
-                  children: appState.history
-                      .map((pair) => GestureDetector(
-                            onTap: () {
-                              appState.toggleFavorite(pair); // Toggle favorite on tap
-                            },
-                            child: Container(
-                              padding: EdgeInsets.all(8), // Optional padding
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(appState.favorites.contains(pair)
-                                      ? Icons.favorite
-                                      : Icons.favorite_border),
-                                  SizedBox(width: 10),
-                                  Text(
-                                    pair.asLowerCase,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: appState.favorites.contains(pair)
-                                          ? FontWeight.bold
-                                          : FontWeight.normal,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ))
-                      .toList(),
-                ),
-              ),
+              child: FavsScrollWidget(scrollController: _scrollController, appState: appState),
             ),
           ),
 
@@ -238,6 +210,55 @@ class _GeneratorPageState extends State<GeneratorPage> {
             height: MediaQuery.of(context).size.height * 0.35, // 50% of screen height
           )
         ],
+      ),
+    );
+  }
+}
+
+class FavsScrollWidget extends StatelessWidget {
+  const FavsScrollWidget({
+    super.key,
+    required ScrollController scrollController,
+    required this.appState,
+  }) : _scrollController = scrollController;
+
+  final ScrollController _scrollController;
+  final MyAppState appState;
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      controller: _scrollController,
+      child: Column(
+        children: appState.history
+            .map((pair) => GestureDetector(
+                  onTap: () {
+                    appState.toggleFavorite(pair); // Toggle favorite on tap
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(8), // Optional padding
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(appState.favorites.contains(pair)
+                            ? Icons.favorite
+                            : Icons.favorite_border),
+                        SizedBox(width: 10),
+                        Text(
+                          pair.asPascalCase,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: appState.favorites.contains(pair)
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ))
+            .toList(),
       ),
     );
   }
@@ -340,13 +361,22 @@ class _BigCardState extends State<BigCard> {
     var appState = context.watch<MyAppState>();
 
     var theme = Theme.of(context);
-    var styleNorm = theme.textTheme.displayMedium?.copyWith(
+
+    var styleNormOne = theme.textTheme.displayMedium?.copyWith(
       color: theme.colorScheme.onPrimary,
-      fontWeight: FontWeight.normal,
+      fontWeight: FontWeight.w400,
     );
-    var styleFavr = theme.textTheme.displayMedium?.copyWith(
+    var styleFavrOne = theme.textTheme.displayMedium?.copyWith(
       color: theme.colorScheme.onPrimary,
-      fontWeight: FontWeight.bold,
+      fontWeight: FontWeight.w700,
+    );
+    var styleNormTwo = theme.textTheme.displayMedium?.copyWith(
+      color: theme.colorScheme.onPrimaryContainer,
+      fontWeight: FontWeight.w200,
+    );
+    var styleFavrTwo = theme.textTheme.displayMedium?.copyWith(
+      color: theme.colorScheme.onPrimaryContainer,
+      fontWeight: FontWeight.w400,
     );
 
     return Card(
@@ -366,9 +396,14 @@ class _BigCardState extends State<BigCard> {
             ),
 
             SizedBox(width: 10),
-            
-            Text(widget.pair.asLowerCase,
-              style: appState.favorites.contains(appState.current) ? styleFavr : styleNorm,
+
+            Text(appState.capitalize(widget.pair.first),
+              style: appState.favorites.contains(appState.current) ? styleFavrOne : styleNormOne,
+              semanticsLabel: widget.pair.asPascalCase,
+            ),
+
+            Text(appState.capitalize(widget.pair.second),
+              style: appState.favorites.contains(appState.current) ? styleFavrTwo : styleNormTwo,
               semanticsLabel: widget.pair.asPascalCase,
             ),
           ],
