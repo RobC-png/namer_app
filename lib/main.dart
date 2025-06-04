@@ -100,6 +100,12 @@ class MyAppState extends ChangeNotifier {
       .map<WordPair>((item) => WordPair(item[0], item[1]))
       .toList();
 
+    for (WordPair pair in favorites){
+      if (!history.contains(pair)){
+        history.add(pair);
+      }
+    }
+
     notifyListeners();
   }
 }
