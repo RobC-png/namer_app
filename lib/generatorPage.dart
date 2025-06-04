@@ -3,6 +3,7 @@ import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
+import 'package:hive_ce/hive.dart';
 
 //files
 import 'main.dart';

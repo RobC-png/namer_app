@@ -1,19 +1,25 @@
 // libs
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_ce_flutter/adapters.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
+import 'package:hive_ce/hive.dart';
 
 //Pages
 import 'myHomePage.dart';
 
 void main() async {
+
   WidgetsFlutterBinding.ensureInitialized();
 
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.landscapeLeft,
     DeviceOrientation.landscapeRight,
   ]);
+
+  await Hive.initFlutter();
+  await Hive.openBox("My_Box");
 
   runApp(MyApp());
 }
@@ -41,14 +47,18 @@ class MyAppState extends ChangeNotifier {
 
   var current = WordPair.random();
   var history = <WordPair>[];
+  var favorites = <WordPair>[];
+  final _MyBox = Hive.box("My_box");
+
+  MyAppState() {
+    LoadWPFromDB(); // <-- Load favorites from DB on startup
+  }
 
   void getNext() {
     history.add(current);
     current = WordPair.random();
     notifyListeners();
   }
-
-  var favorites = <WordPair>[];
 
   void toggleFavorite(WordPair pair) {
     if (favorites.contains(pair)){
@@ -68,5 +78,28 @@ class MyAppState extends ChangeNotifier {
       favorites.remove(pair);
       history.remove(pair);
       notifyListeners();
+  }
+
+  void SaveWPToDB(){
+
+    var SaveableFavs = <List<String>>[];
+
+    for (WordPair pair in favorites){
+      SaveableFavs.add([pair.first, pair.second]);
+    }
+
+    _MyBox.put('favs', SaveableFavs);
+  }
+
+  void LoadWPFromDB(){
+    // Get the saved list from Hive
+    var favoritesTemp = _MyBox.get('favs', defaultValue: <List<String>>[]);
+
+    // Convert List<List<String>> to List<WordPair>
+    favorites = (favoritesTemp as List)
+      .map<WordPair>((item) => WordPair(item[0], item[1]))
+      .toList();
+
+    notifyListeners();
   }
 }

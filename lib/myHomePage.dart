@@ -1,9 +1,11 @@
 // libs
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 //files
 import 'generatorPage.dart';
 import 'favoritesPage.dart';
+import 'main.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -12,9 +14,12 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   var selectedIndex = 0;
+  
 
   @override
   Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
+
     Widget page;
     switch (selectedIndex){
       case 0:
@@ -57,6 +62,29 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
+
+      
+      floatingActionButton: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FloatingActionButton(
+            onPressed: () {
+              appState.SaveWPToDB();
+            },
+            heroTag: 'saveBtn',
+            child: Icon(Icons.upload),
+          ),
+          SizedBox(width: 16), // Space between buttons
+          FloatingActionButton(
+            onPressed: () {
+              appState.LoadWPFromDB();// Add your second button action here
+            },
+            heroTag: 'otherBtn',
+            child: Icon(Icons.download), // Change icon as needed
+          ),
+        ],
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }
