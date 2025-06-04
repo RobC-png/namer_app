@@ -63,7 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
 
-      
+
       floatingActionButton: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -77,7 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
           SizedBox(width: 16), // Space between buttons
           FloatingActionButton(
             onPressed: () {
-              appState.LoadWPFromDB();// Add your second button action here
+              appState.loadWPFromDB();// Add your second button action here
             },
             heroTag: 'otherBtn',
             child: Icon(Icons.download), // Change icon as needed

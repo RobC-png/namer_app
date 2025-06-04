@@ -51,7 +51,7 @@ class MyAppState extends ChangeNotifier {
   final _MyBox = Hive.box("My_box");
 
   MyAppState() {
-    LoadWPFromDB(); // <-- Load favorites from DB on startup
+    loadWPFromDB(); // <-- Load favorites from DB on startup
   }
 
   void getNext() {
@@ -91,7 +91,7 @@ class MyAppState extends ChangeNotifier {
     _MyBox.put('favs', SaveableFavs);
   }
 
-  void LoadWPFromDB(){
+  void loadWPFromDB(){
     // Get the saved list from Hive
     var favoritesTemp = _MyBox.get('favs', defaultValue: <List<String>>[]);
 
