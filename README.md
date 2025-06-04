@@ -30,11 +30,11 @@ Here are the additions made since finishing the official tutorial:
 
 3. 🗑️ Delete Functionality – Remove items from favorites and history individually.
 
+4. ☁️ Persistence – Save favorites across sessions using a Button to upload them to a local DB.
+
 ## 🛠️ Planned Features
 This project is actively evolving as a learning tool. Here are my plans for future additions:
 
 1. 🔍 Search – Search within favorites or history.
 
 2. 📋 Copy to Clipboard – Tap to copy a word pair.
-
-3. ☁️ Persistence – Save favorites across sessions (e.g. SharedPreferences or local DB).
